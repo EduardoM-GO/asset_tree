@@ -41,23 +41,27 @@ class _AssetsBodyWidgetState extends State<AssetsBodyWidget> {
 
   @override
   Widget build(BuildContext context) {
+    Widget child = const Center(child: Text('Sem dados'));
+
+    if (isLoading) {
+      child = const Center(child: CircularProgressIndicator());
+    } else if (treeRoots.isNotEmpty) {
+      child = ListView.builder(
+        itemCount: treeRoots.length,
+        itemBuilder: (context, index) {
+          final TreeNode treeNode = treeRoots[index];
+          return CardAssetWidget(treeNode: treeNode);
+        },
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.all(.0),
       child: Column(
         children: [
           AssetsFilterWidget(onFilter: onFilter),
           const SizedBox(height: 16),
-          Expanded(
-            child: isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : ListView.builder(
-                    itemCount: treeRoots.length,
-                    itemBuilder: (context, index) {
-                      final TreeNode treeNode = treeRoots[index];
-                      return CardAssetWidget(treeNode: treeNode);
-                    },
-                  ),
-          ),
+          Expanded(child: child),
         ],
       ),
     );
