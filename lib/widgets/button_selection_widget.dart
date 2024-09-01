@@ -1,17 +1,70 @@
-import 'package:asset_tree/models/asset.dart';
 import 'package:flutter/material.dart';
 
 class ButtonSelectionWidget extends StatefulWidget {
+  final String label;
+  final IconData icon;
+  final bool isSelected;
   final void Function(bool value) onChanged;
-  const ButtonSelectionWidget({super.key, required this.onChanged});
+  const ButtonSelectionWidget({
+    super.key,
+    required this.label,
+    required this.icon,
+    this.isSelected = false,
+    required this.onChanged,
+  });
 
   @override
   State<ButtonSelectionWidget> createState() => _ButtonSelectionWidgetState();
 }
 
 class _ButtonSelectionWidgetState extends State<ButtonSelectionWidget> {
+  late bool isSelected;
+
+  @override
+  void initState() {
+    super.initState();
+    isSelected = widget.isSelected;
+  }
+
+  @override
+  void didUpdateWidget(covariant ButtonSelectionWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.isSelected != widget.isSelected) {
+      isSelected = widget.isSelected;
+    }
+  }
+
+  late ColorScheme colorScheme;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    colorScheme = Theme.of(context).colorScheme;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SizedBox();
+    return ElevatedButton.icon(
+      onPressed: () {
+        setState(() {
+          isSelected = !isSelected;
+          widget.onChanged(isSelected);
+        });
+      },
+      label: Text(widget.label,
+          style: const TextStyle(fontWeight: FontWeight.w500)),
+      icon: Icon(widget.icon),
+      style: buttonStyle,
+    );
+  }
+
+  ButtonStyle get buttonStyle {
+    return ButtonStyle(
+      backgroundColor: WidgetStateProperty.all<Color>(
+        isSelected ? colorScheme.primary : Colors.white,
+      ),
+      foregroundColor: WidgetStatePropertyAll(
+        isSelected ? Colors.white : Colors.grey,
+      ),
+    );
   }
 }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:asset_tree/controllers/tree_node_controller.dart';
 import 'package:asset_tree/models/asset.dart';
 import 'package:asset_tree/models/tree_node.dart';
+import 'package:asset_tree/views/assets/widgets/assets_filter_widget.dart';
 import 'package:asset_tree/views/assets/widgets/card_asset_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -39,29 +40,27 @@ class _AssetsBodyWidgetState extends State<AssetsBodyWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 16),
-        TextField(
-          decoration: const InputDecoration(
-            hintText: 'Buscar Ativo ou Local',
-            prefixIcon: Icon(Icons.search),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          AssetsFilterWidget(
+            onFilter: ({required search, required status}) {},
           ),
-          controller: searchController,
-        ),
-        const SizedBox(height: 16),
-        Expanded(
-          child: isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : ListView.builder(
-                  itemCount: treeRoots.length,
-                  itemBuilder: (context, index) {
-                    final TreeNode treeNode = treeRoots[index];
-                    return CardAssetWidget(treeNode: treeNode);
-                  },
-                ),
-        ),
-      ],
+          const SizedBox(height: 16),
+          Expanded(
+            child: isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : ListView.builder(
+                    itemCount: treeRoots.length,
+                    itemBuilder: (context, index) {
+                      final TreeNode treeNode = treeRoots[index];
+                      return CardAssetWidget(treeNode: treeNode);
+                    },
+                  ),
+          ),
+        ],
+      ),
     );
   }
 

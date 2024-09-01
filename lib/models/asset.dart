@@ -31,9 +31,9 @@ class Asset {
         parentId: map['parentId'],
         sensorId: map['sensorId'],
         sensorType: map['sensorType'],
-        status: StatusAsset.values.cast().firstWhere(
+        status: StatusAsset.values.cast<StatusAsset?>().firstWhere(
             (e) =>
-                e.name.toLowerCase() == map['status'].toString().toLowerCase(),
+                e?.name.toLowerCase() == map['status'].toString().toLowerCase(),
             orElse: () => null),
         gatewayId: map['gatewayId'],
         locationId: map['locationId'],
