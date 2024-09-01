@@ -39,8 +39,14 @@ class _AssetsFilterWidgetState extends State<AssetsFilterWidget> {
         children: [
           TextField(
             decoration: const InputDecoration(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(4)),
+                borderSide: BorderSide.none,
+              ),
+              filled: true,
               hintText: 'Buscar Ativo ou Local',
               prefixIcon: Icon(Icons.search),
+              contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 16),
             ),
             onChanged: (value) {
               search = value;
