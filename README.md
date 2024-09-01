@@ -1,16 +1,25 @@
-# asset_tree
+### Potential Project Improvements
 
-A new Flutter project.
+- **Error Handling:** Review and enhance error handling to ensure that all exceptions are properly caught and managed robustly.
+  
+- **Test Coverage:** Increase the coverage of unit and integration tests, with a particular focus on the most critical areas of the application.
 
-## Getting Started
+- **Performance:** Optimize the performance of the listing and search functionality for the `Apex` company, aiming to improve efficiency and reduce response times.
 
-This project is a starting point for a Flutter application.
+- **Usability:** Make adjustments to enhance usability, ensuring the application is more intuitive and user-friendly.
 
-A few resources to get you started if this is your first Flutter project:
+- **Code in `tree_node_controller.dart`:** Review the code in the `tree_node_controller.dart` class to identify and implement potential improvements.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+[demonstration video](https://drive.google.com/file/d/1_5xCo7F8lkNke7ecS-4B6HIkuCvfanS-/view?usp=share_link)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+
+> **Note:** I chose to use the MVC architecture because it provides simplicity while keeping the code organized and maintainable.
+
+
+
+
+
+
+
+
