@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:asset_tree/controllers/filter_asset.dart';
 import 'package:asset_tree/controllers/tree_node_controller.dart';
 import 'package:asset_tree/models/asset.dart';
 import 'package:asset_tree/models/tree_node.dart';
@@ -41,12 +42,10 @@ class _AssetsBodyWidgetState extends State<AssetsBodyWidget> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(.0),
       child: Column(
         children: [
-          AssetsFilterWidget(
-            onFilter: ({required search, required status}) {},
-          ),
+          AssetsFilterWidget(onFilter: onFilter),
           const SizedBox(height: 16),
           Expanded(
             child: isLoading
@@ -70,6 +69,25 @@ class _AssetsBodyWidgetState extends State<AssetsBodyWidget> {
     });
 
     final result = await treeNodeController.getTreeRoots(widget.assets);
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      treeRoots
+        ..clear()
+        ..addAll(result);
+      isLoading = false;
+    });
+  }
+
+  Future<void> onFilter(FilterAsset filter) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    final result = await treeNodeController.filterTreeNodes(filter);
 
     if (!mounted) {
       return;
