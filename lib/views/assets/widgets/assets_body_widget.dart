@@ -59,7 +59,10 @@ class _AssetsBodyWidgetState extends State<AssetsBodyWidget> {
       padding: const EdgeInsets.all(.0),
       child: Column(
         children: [
-          AssetsFilterWidget(onFilter: onFilter),
+          AssetsFilterWidget(
+            isLoading: isLoading,
+            onFilter: onFilter,
+          ),
           const SizedBox(height: 16),
           Expanded(child: child),
         ],

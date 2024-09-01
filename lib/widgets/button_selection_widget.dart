@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
 class ButtonSelectionWidget extends StatefulWidget {
+  final bool enabled;
   final String label;
   final IconData icon;
   final bool isSelected;
   final void Function(bool value) onChanged;
   const ButtonSelectionWidget({
     super.key,
+    required this.enabled,
     required this.label,
     required this.icon,
     this.isSelected = false,
@@ -44,12 +46,14 @@ class _ButtonSelectionWidgetState extends State<ButtonSelectionWidget> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
-      onPressed: () {
-        setState(() {
-          isSelected = !isSelected;
-          widget.onChanged(isSelected);
-        });
-      },
+      onPressed: widget.enabled
+          ? () {
+              setState(() {
+                isSelected = !isSelected;
+                widget.onChanged(isSelected);
+              });
+            }
+          : null,
       label: Text(widget.label,
           style: const TextStyle(fontWeight: FontWeight.w500)),
       icon: Icon(widget.icon),

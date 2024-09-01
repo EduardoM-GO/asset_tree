@@ -6,8 +6,13 @@ import 'package:asset_tree/widgets/button_selection_widget.dart';
 import 'package:flutter/material.dart';
 
 class AssetsFilterWidget extends StatefulWidget {
+  final bool isLoading;
   final void Function(FilterAsset filter) onFilter;
-  const AssetsFilterWidget({super.key, required this.onFilter});
+  const AssetsFilterWidget({
+    super.key,
+    required this.isLoading,
+    required this.onFilter,
+  });
 
   @override
   State<AssetsFilterWidget> createState() => _AssetsFilterWidgetState();
@@ -38,6 +43,7 @@ class _AssetsFilterWidgetState extends State<AssetsFilterWidget> {
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
+              enabled: !widget.isLoading,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(4)),
@@ -59,6 +65,7 @@ class _AssetsFilterWidgetState extends State<AssetsFilterWidget> {
               mainAxisSize: MainAxisSize.max,
               children: [
                 ButtonSelectionWidget(
+                  enabled: !widget.isLoading,
                   isSelected: status == StatusAsset.operating,
                   onChanged: (value) {
                     setState(() {
@@ -71,6 +78,7 @@ class _AssetsFilterWidgetState extends State<AssetsFilterWidget> {
                 ),
                 const SizedBox(width: 16),
                 ButtonSelectionWidget(
+                  enabled: !widget.isLoading,
                   isSelected: status == StatusAsset.alert,
                   onChanged: (value) {
                     setState(() {
