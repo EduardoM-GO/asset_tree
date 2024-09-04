@@ -1,4 +1,3 @@
-import 'package:asset_tree/controllers/filter_asset.dart';
 import 'package:asset_tree/models/asset.dart';
 import 'package:asset_tree/models/tree_node.dart';
 import 'package:flutter/foundation.dart';
@@ -47,49 +46,50 @@ class TreeNodeController {
     return treeNodes;
   }
 
-  Future<List<TreeNode>> filterTreeNodes(FilterAsset filter) =>
-      compute<FilterAsset, List<TreeNode>>(
-          _filterTreeRoots, filter.copyWith(treeRoots: _treeRoots));
-
-  List<TreeNode> _filterTreeRoots(FilterAsset filter) {
-    if (filter.search.isEmpty && filter.status == null) {
-      return _treeRoots;
+  Stream<List<TreeNode>> filterTreeRoots(
+      {required String search, required StatusAsset? status}) async* {
+    if (search.isEmpty && status == null) {
+      yield _treeRoots;
+      return;
     }
 
     final List<TreeNode> treeNodes = [];
 
-    for (final treeRoot in filter.treeRoots) {
+    for (final treeRoot in _treeRoots) {
       if (treeRoot.children.isEmpty) {
         continue;
       }
-      final children =
-          _filterTreeNodes(filter: filter, treeNodes: treeRoot.children);
+      final children = _filterTreeNodes(
+          search: search, status: status, treeNodes: treeRoot.children);
 
       if (children.isNotEmpty) {
         treeNodes.add(treeRoot.copyWith(children: children));
       }
-      if (_isFilterAsset(treeRoot.asset, filter)) {
+      if (_isFilterAsset(
+          asset: treeRoot.asset, search: search, status: status)) {
         treeNodes.add(treeRoot.copyWith(children: []));
       }
+      yield treeNodes;
     }
-
-    return treeNodes;
   }
 
   List<TreeNode> _filterTreeNodes(
-      {required FilterAsset filter, required List<TreeNode> treeNodes}) {
+      {required String search,
+      required StatusAsset? status,
+      required List<TreeNode> treeNodes}) {
     final List<TreeNode> resultTreeNodes = [];
 
     for (final treeNode in treeNodes) {
-      final children =
-          _filterTreeNodes(filter: filter, treeNodes: treeNode.children);
+      final children = _filterTreeNodes(
+          search: search, status: status, treeNodes: treeNode.children);
 
       if (children.isNotEmpty) {
         resultTreeNodes.add(treeNode.copyWith(children: children));
         continue;
       }
 
-      if (_isFilterAsset(treeNode.asset, filter)) {
+      if (_isFilterAsset(
+          asset: treeNode.asset, search: search, status: status)) {
         resultTreeNodes.add(treeNode);
         continue;
       }
@@ -98,13 +98,16 @@ class TreeNodeController {
     return resultTreeNodes;
   }
 
-  bool _isFilterAsset(Asset asset, FilterAsset filter) {
-    if (filter.search.isNotEmpty &&
-        !asset.name.toLowerCase().contains(filter.search.toLowerCase())) {
+  bool _isFilterAsset(
+      {required Asset asset,
+      required String search,
+      required StatusAsset? status}) {
+    if (search.isNotEmpty &&
+        !asset.name.toLowerCase().contains(search.toLowerCase())) {
       return false;
     }
 
-    if (filter.status != null && asset.status != filter.status) {
+    if (status != null && asset.status != status) {
       return false;
     }
 

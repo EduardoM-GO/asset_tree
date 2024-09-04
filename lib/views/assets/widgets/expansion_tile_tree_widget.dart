@@ -27,12 +27,13 @@ class _ExpansionTileTreeWidgetState extends State<ExpansionTileTreeWidget> {
   @override
   Widget build(BuildContext context) {
     final statusIcon = getStatusIcon(widget.treeNode.asset);
+    final isChildren = widget.treeNode.children.isNotEmpty;
 
     return ExpansionTile(
       tilePadding: EdgeInsets.only(left: 18.0 * widget.level),
       title: Row(
         children: [
-          if (widget.treeNode.children.isNotEmpty) ...[
+          if (isChildren) ...[
             AnimatedRotation(
                 turns: isExpanded ? 0 : 0.50,
                 duration: const Duration(milliseconds: 200),

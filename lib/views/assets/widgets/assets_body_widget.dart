@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:asset_tree/controllers/filter_asset.dart';
 import 'package:asset_tree/controllers/tree_node_controller.dart';
 import 'package:asset_tree/models/asset.dart';
 import 'package:asset_tree/models/tree_node.dart';
@@ -33,9 +32,12 @@ class _AssetsBodyWidgetState extends State<AssetsBodyWidget> {
     scheduleMicrotask(getTreeRoots);
   }
 
+  StreamSubscription<List<TreeNode>>? subscription;
+
   @override
   void dispose() {
     searchController.dispose();
+    subscription?.cancel();
     super.dispose();
   }
 
@@ -48,10 +50,8 @@ class _AssetsBodyWidgetState extends State<AssetsBodyWidget> {
     } else if (treeRoots.isNotEmpty) {
       child = ListView.builder(
         itemCount: treeRoots.length,
-        itemBuilder: (context, index) {
-          final TreeNode treeNode = treeRoots[index];
-          return CardAssetWidget(treeNode: treeNode);
-        },
+        itemBuilder: (context, index) => CardAssetWidget(
+            key: Key(index.toString()), treeNode: treeRoots[index]),
       );
     }
 
@@ -89,22 +89,25 @@ class _AssetsBodyWidgetState extends State<AssetsBodyWidget> {
     });
   }
 
-  Future<void> onFilter(FilterAsset filter) async {
+  Future<void> onFilter(
+      {required String search, required StatusAsset? status}) async {
     setState(() {
       isLoading = true;
     });
+    await subscription?.cancel();
+    subscription = treeNodeController
+        .filterTreeRoots(search: search, status: status)
+        .listen((event) {
+      if (!mounted) {
+        return;
+      }
 
-    final result = await treeNodeController.filterTreeNodes(filter);
-
-    if (!mounted) {
-      return;
-    }
-
-    setState(() {
-      treeRoots
-        ..clear()
-        ..addAll(result);
-      isLoading = false;
+      setState(() {
+        treeRoots
+          ..clear()
+          ..addAll(event);
+        isLoading = false;
+      });
     });
   }
 }
