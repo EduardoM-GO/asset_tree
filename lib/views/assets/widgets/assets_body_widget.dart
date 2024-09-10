@@ -7,6 +7,7 @@ import 'package:asset_tree/models/asset.dart';
 import 'package:asset_tree/models/tree_node.dart';
 import 'package:asset_tree/views/assets/widgets/assets_filter_widget.dart';
 import 'package:asset_tree/views/assets/widgets/card_asset_widget.dart';
+import 'package:asset_tree/widgets/infinite_list_view_widget.dart';
 import 'package:flutter/material.dart';
 
 class AssetsBodyWidget extends StatefulWidget {
@@ -50,10 +51,7 @@ class _AssetsBodyWidgetState extends State<AssetsBodyWidget> {
     if (isLoading) {
       child = const Center(child: CircularProgressIndicator());
     } else if (treeRootsWidgets.isNotEmpty) {
-      child = ListView.builder(
-        itemCount: treeRootsWidgets.length,
-        itemBuilder: (context, index) => treeRootsWidgets[index],
-      );
+      child = InfiniteListViewWidget(pageSize: 3, children: treeRootsWidgets);
     }
 
     return Padding(

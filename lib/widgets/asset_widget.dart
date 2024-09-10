@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 
 enum AssetPath {
   logo('assets/images/logo.png'),
-  icon('assets/images/icon.png'),
-  asset('assets/images/asset.png'),
-  component('assets/images/component.png'),
-  location('assets/images/location.png');
+  icon('assets/images/icon.png');
 
   final String caminho;
   const AssetPath(this.caminho);

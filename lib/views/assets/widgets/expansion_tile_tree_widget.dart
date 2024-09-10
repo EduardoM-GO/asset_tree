@@ -1,6 +1,6 @@
 import 'package:asset_tree/models/asset.dart';
 import 'package:asset_tree/models/tree_node.dart';
-import 'package:asset_tree/widgets/asset_widget.dart';
+import 'package:asset_tree/views/assets/widgets/icon_assets_widget.dart';
 import 'package:flutter/material.dart';
 
 class ExpansionTileTreeWidget extends StatefulWidget {
@@ -26,7 +26,19 @@ class _ExpansionTileTreeWidgetState extends State<ExpansionTileTreeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final statusIcon = getStatusIcon(widget.treeNode.asset);
+    final statusIcon = switch (widget.treeNode.asset.status) {
+      StatusAsset.operating => const Icon(
+          Icons.bolt_rounded,
+          color: Colors.green,
+          size: 18,
+        ),
+      StatusAsset.alert => const Icon(
+          Icons.circle,
+          color: Colors.red,
+          size: 10,
+        ),
+      _ => null
+    };
     final isChildren = widget.treeNode.children.isNotEmpty;
 
     if (!isChildren) {
@@ -36,7 +48,12 @@ class _ExpansionTileTreeWidgetState extends State<ExpansionTileTreeWidget> {
           title: Row(
             children: [
               SizedBox(width: widget.level > 0 ? 8 : 0),
-              AssetWidget(assetPath: assetPath, width: 22, height: 22),
+              switch (widget.treeNode.asset.isLocation) {
+                true => const IconAssetsWidget.location(),
+                false when widget.treeNode.asset.isComponent =>
+                  const IconAssetsWidget.component(),
+                _ => const IconAssetsWidget.asset()
+              },
               const SizedBox(width: 4),
               Text(
                 widget.treeNode.asset.name.toUpperCase(),
@@ -76,8 +93,12 @@ class _ExpansionTileTreeWidgetState extends State<ExpansionTileTreeWidget> {
             ),
             const SizedBox(width: 4),
           ],
-          RepaintBoundary(
-              child: AssetWidget(assetPath: assetPath, width: 22, height: 22)),
+          switch (widget.treeNode.asset.isLocation) {
+            true => const IconAssetsWidget.location(),
+            false when widget.treeNode.asset.isComponent =>
+              const IconAssetsWidget.component(),
+            _ => const IconAssetsWidget.asset()
+          },
           const SizedBox(width: 4),
           Text(
             widget.treeNode.asset.name.toUpperCase(),
@@ -110,28 +131,4 @@ class _ExpansionTileTreeWidgetState extends State<ExpansionTileTreeWidget> {
       ),
     );
   }
-
-  AssetPath get assetPath {
-    if (widget.treeNode.asset.isLocation) {
-      return AssetPath.location;
-    }
-    if (widget.treeNode.asset.isComponent) {
-      return AssetPath.component;
-    }
-    return AssetPath.asset;
-  }
-
-  Icon? getStatusIcon(Asset asset) => switch (asset.status) {
-        StatusAsset.operating => const Icon(
-            Icons.bolt_rounded,
-            color: Colors.green,
-            size: 18,
-          ),
-        StatusAsset.alert => const Icon(
-            Icons.circle,
-            color: Colors.red,
-            size: 10,
-          ),
-        _ => null
-      };
 }
