@@ -29,27 +29,60 @@ class _ExpansionTileTreeWidgetState extends State<ExpansionTileTreeWidget> {
     final statusIcon = getStatusIcon(widget.treeNode.asset);
     final isChildren = widget.treeNode.children.isNotEmpty;
 
+    if (!isChildren) {
+      return Padding(
+        padding: EdgeInsets.only(left: 18.0 * widget.level),
+        child: ListTile(
+          title: Row(
+            children: [
+              SizedBox(width: widget.level > 0 ? 8 : 0),
+              AssetWidget(assetPath: assetPath, width: 22, height: 22),
+              const SizedBox(width: 4),
+              Text(
+                widget.treeNode.asset.name.toUpperCase(),
+                style: const TextStyle(fontSize: 14, color: Colors.black),
+                overflow: TextOverflow.ellipsis,
+              ),
+              if (statusIcon != null) ...[
+                const SizedBox(width: 4),
+                statusIcon,
+              ]
+            ],
+          ),
+          contentPadding: EdgeInsets.zero,
+          dense: true,
+          visualDensity: const VisualDensity(
+            horizontal: VisualDensity.minimumDensity,
+            vertical: VisualDensity.minimumDensity,
+          ),
+        ),
+      );
+    }
+
     return ExpansionTile(
       tilePadding: EdgeInsets.only(left: 18.0 * widget.level),
       title: Row(
         children: [
           if (isChildren) ...[
-            AnimatedRotation(
-                turns: isExpanded ? 0 : 0.50,
-                duration: const Duration(milliseconds: 200),
-                child: const Icon(
-                  Icons.keyboard_arrow_down_rounded,
-                  color: Colors.grey,
-                  size: 20,
-                )),
+            RepaintBoundary(
+              child: AnimatedRotation(
+                  turns: isExpanded ? 0 : 0.50,
+                  duration: const Duration(milliseconds: 200),
+                  child: const Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    color: Colors.grey,
+                    size: 20,
+                  )),
+            ),
             const SizedBox(width: 4),
-          ] else
-            SizedBox(width: widget.level > 0 ? 8 : 0),
-          AssetWidget(assetPath: assetPath, width: 22, height: 22),
+          ],
+          RepaintBoundary(
+              child: AssetWidget(assetPath: assetPath, width: 22, height: 22)),
           const SizedBox(width: 4),
           Text(
             widget.treeNode.asset.name.toUpperCase(),
             style: const TextStyle(fontSize: 14, color: Colors.black),
+            overflow: TextOverflow.ellipsis,
           ),
           if (statusIcon != null) ...[
             const SizedBox(width: 4),
@@ -68,12 +101,13 @@ class _ExpansionTileTreeWidgetState extends State<ExpansionTileTreeWidget> {
         vertical: VisualDensity.minimumDensity,
       ),
       childrenPadding: EdgeInsets.zero,
-      children: widget.treeNode.children
-          .map((child) => ExpansionTileTreeWidget(
-                treeNode: child,
-                level: widget.level + 1,
-              ))
-          .toList(),
+      children: List.generate(
+        widget.treeNode.children.length,
+        (index) => ExpansionTileTreeWidget(
+          treeNode: widget.treeNode.children[index],
+          level: widget.level + 1,
+        ),
+      ),
     );
   }
 

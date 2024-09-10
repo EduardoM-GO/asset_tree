@@ -7,6 +7,5 @@ class CardAssetWidget extends StatelessWidget {
   const CardAssetWidget({super.key, required this.treeNode});
 
   @override
-  Widget build(BuildContext context) =>
-      ExpansionTileTreeWidget(treeNode: treeNode, level: 0);
+  Widget build(BuildContext context) => ExpansionTileTreeWidget(treeNode: treeNode, level: 0);
 }

@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:isolate';
 
+import 'package:asset_tree/controllers/filter_asset.dart';
 import 'package:asset_tree/controllers/tree_node_controller.dart';
 import 'package:asset_tree/models/asset.dart';
 import 'package:asset_tree/models/tree_node.dart';
@@ -18,7 +20,7 @@ class AssetsBodyWidget extends StatefulWidget {
 class _AssetsBodyWidgetState extends State<AssetsBodyWidget> {
   late final TextEditingController searchController;
   late final TreeNodeController treeNodeController;
-  late final List<TreeNode> treeRoots;
+  late final List<CardAssetWidget> treeRootsWidgets;
   late bool isLoading;
 
   @override
@@ -26,7 +28,7 @@ class _AssetsBodyWidgetState extends State<AssetsBodyWidget> {
     super.initState();
     searchController = TextEditingController();
     treeNodeController = TreeNodeController();
-    treeRoots = [];
+    treeRootsWidgets = [];
     isLoading = false;
 
     scheduleMicrotask(getTreeRoots);
@@ -47,11 +49,10 @@ class _AssetsBodyWidgetState extends State<AssetsBodyWidget> {
 
     if (isLoading) {
       child = const Center(child: CircularProgressIndicator());
-    } else if (treeRoots.isNotEmpty) {
+    } else if (treeRootsWidgets.isNotEmpty) {
       child = ListView.builder(
-        itemCount: treeRoots.length,
-        itemBuilder: (context, index) => CardAssetWidget(
-            key: Key(index.toString()), treeNode: treeRoots[index]),
+        itemCount: treeRootsWidgets.length,
+        itemBuilder: (context, index) => treeRootsWidgets[index],
       );
     }
 
@@ -81,33 +82,40 @@ class _AssetsBodyWidgetState extends State<AssetsBodyWidget> {
       return;
     }
 
+    final widgets = await treeRootsToWidgets(result);
     setState(() {
-      treeRoots
+      treeRootsWidgets
         ..clear()
-        ..addAll(result);
+        ..addAll(widgets);
       isLoading = false;
     });
   }
 
-  Future<void> onFilter(
-      {required String search, required StatusAsset? status}) async {
+  Future<void> onFilter(FilterAsset filter) async {
     setState(() {
       isLoading = true;
     });
-    await subscription?.cancel();
-    subscription = treeNodeController
-        .filterTreeRoots(search: search, status: status)
-        .listen((event) {
-      if (!mounted) {
-        return;
-      }
 
-      setState(() {
-        treeRoots
-          ..clear()
-          ..addAll(event);
-        isLoading = false;
-      });
+    final result = await treeNodeController.filterTreeNodes(filter);
+    if (!mounted) {
+      return;
+    }
+    final widgets = await treeRootsToWidgets(result);
+
+    setState(() {
+      treeRootsWidgets
+        ..clear()
+        ..addAll(widgets);
+      isLoading = false;
     });
+  }
+
+  Future<List<CardAssetWidget>> treeRootsToWidgets(
+      List<TreeNode> treeRoots) async {
+    final result = await Isolate.run<List<CardAssetWidget>>(() => List.generate(
+        treeRoots.length,
+        (index) => CardAssetWidget(treeNode: treeRoots[index])));
+
+    return result;
   }
 }

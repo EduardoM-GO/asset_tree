@@ -1,13 +1,14 @@
 import 'dart:async';
 
+import 'package:asset_tree/controllers/filter_asset.dart';
 import 'package:asset_tree/models/asset.dart';
 import 'package:asset_tree/widgets/button_selection_widget.dart';
 import 'package:flutter/material.dart';
 
 class AssetsFilterWidget extends StatefulWidget {
   final bool isLoading;
-  final void Function({required String search, required StatusAsset? status})
-      onFilter;
+  final void Function(FilterAsset filter) onFilter;
+
   const AssetsFilterWidget({
     super.key,
     required this.isLoading,
@@ -100,6 +101,6 @@ class _AssetsFilterWidgetState extends State<AssetsFilterWidget> {
       _debounce?.cancel();
     }
     _debounce = Timer(const Duration(milliseconds: 500),
-        () => widget.onFilter(search: search, status: status));
+        () => widget.onFilter(FilterAsset(search: search, status: status)));
   }
 }

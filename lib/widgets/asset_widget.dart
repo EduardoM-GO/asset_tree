@@ -23,5 +23,6 @@ class AssetWidget extends StatelessWidget {
         assetPath.caminho,
         height: height,
         width: width,
+        fit: BoxFit.cover,
       );
 }
